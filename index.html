@@ -261,5 +261,27 @@ footer{
   </a>
 </footer>
 
+<script>
+(function(){
+  var v = document.querySelector('.hero__video');
+  if (!v) return;
+  v.muted = true;
+  var p = v.play();
+  if (p !== undefined) {
+    p.catch(function() {
+      v.setAttribute('controls', '');
+    });
+  }
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) { v.play().catch(function(){}); }
+        else { v.pause(); }
+      });
+    }, { threshold: 0.1 });
+    io.observe(v);
+  }
+})();
+</script>
 </body>
 </html>
