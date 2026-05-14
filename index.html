@@ -239,21 +239,20 @@ footer{
   var v = document.querySelector('.hero__video');
   if (!v) return;
   v.muted = true;
-  var p = v.play();
-  if (p !== undefined) {
-    p.catch(function() {
-      // autoplay blocked silently
-    });
+
+  function tryPlay() {
+    if (v.paused) v.play().catch(function(){});
   }
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function(entries) {
-      entries.forEach(function(e) {
-        if (e.isIntersecting) { v.play().catch(function(){}); }
-        else { v.pause(); }
-      });
-    }, { threshold: 0.1 });
-    io.observe(v);
-  }
+
+  tryPlay();
+  v.addEventListener('canplay', tryPlay, { once: true });
+
+  ['touchstart','click','scroll'].forEach(function(evt) {
+    document.addEventListener(evt, function h() {
+      tryPlay();
+      document.removeEventListener(evt, h);
+    }, { once: true, passive: true });
+  });
 })();
 </script>
 </body>
